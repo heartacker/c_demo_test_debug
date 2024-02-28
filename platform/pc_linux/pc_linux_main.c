@@ -3,6 +3,9 @@
 
 #include "afe_common.h"
 
+/*!
+ * @brief display size of number type
+ */
 void display_sizeof()
 {
 #if DEBUG
@@ -40,12 +43,6 @@ extern int afe_cmd_proc(int argc, char const *argv[]);
 int main(int argc, char const *argv[])
 // int main(int argc, const char *argv[])
 {
-    for (uint32_t i = 0; i < argc; i++) {
-        printf("%d: %s\n", i, argv[i]);
-    }
     strcpy(argv[0], "afe_cmd");
-    for (int32_t i = 0; i < argc; i++) {
-        printf("%u: %s\n", i, argv[i]);
-    }
-    return afe_cmd_proc(argc, argv);
+    afe_cmd_proc(argc, argv);
 }

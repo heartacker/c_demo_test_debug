@@ -1,10 +1,7 @@
 #ifndef __AFE_COMMON__H__
 #define __AFE_COMMON__H__
-
+#define DEBUG 1
 #include <bits/types.h>
-
-typedef __int32_t int32_t;
-typedef __uint32_t uint32_t;
 
 typedef __int8_t int8_t;
 typedef __uint8_t uint8_t;

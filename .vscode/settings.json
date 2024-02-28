@@ -1,0 +1,30 @@
+{
+    "files.associations": {
+        "*.hint": "c",
+        "*.v": "verilog",
+        "*.asm": "asm-intel-x86-generic",
+        "*.pln": "cpp",
+        "document.xml": "plaintext",
+        "language*.ts": "xml",
+        "*.md": "markdown",
+        "*.wavejson": "jsonc",
+        "*.mermaid": "Mermaid",
+        "*.wavejsonc": "jsonc",
+        "*.json5": "json5",
+        "*.clang-format": "yaml",
+        ".gitignore": "ignore",
+        "*.m": "octave",
+        "*.dio": "xml",
+        "*.XamlStyler": "jsonc",
+        "*.km": "json",
+        "*.sv": "systemverilog",
+        "CMakeLists.txt": "cmake",
+        "*.s": "gas",
+        "*.x": "linkerscript",
+        "*.dis": "asm-collection",
+        "*.tcl": "tcl",
+        "*.cfg": "tcl",
+        "stdio.h": "c"
+    },
+    "debug.inlineValues": "on"
+}

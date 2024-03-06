@@ -1,73 +1,58 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "afe_co_int.h"
+#include "afe_common.h"
+
+#include "commands.h"
+
 #include "afe.h"
 
-extern void display_sizeof();
+#if 1
 
-struct bit_field_st {
-    //  low
-    unsigned byte0  : 8;
-    unsigned byte1  : 8;
-    unsigned byte2  : 8;
-    unsigned byte3  : 8;
-    unsigned byte9  : 9;
-    unsigned byte7  : 7;
-    unsigned        : 7;
-    unsigned byte92 : 9;
-};
-
-union Data {
-    uint64_t whole;
-    struct bit_field_st bf;
-};
-
-void bit_field_test()
+COMMAND_HANDLER_V2(afe, afe_lock_dect, __COUNTER__, "[abc:iaaaaaaaaaaaaant]",
+                   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", NULL)
 {
-
-    struct bit_field_st bit_field_st[2];
-    bit_field_st[0].byte0 = 0x12;
-    bit_field_st[0].byte1 = 0x34;
-    bit_field_st[0].byte2 = 0x56;
-    bit_field_st[0].byte3 = 0x78;
-    bit_field_st[0].byte3 = 0x78;
-    bit_field_st[0].byte92 = 0xaa;
-    // uint64_t *p = 0x12345678;
-    // bit_field_st[1];
-    for (size_t i = 0; i < 2; i++) {
-        printf("bit_field_st\t%016x\n", bit_field_st[i]);
-        printf("bit_field_st.0\t%08x\n", bit_field_st[i].byte0);
-        printf("bit_field_st.1\t%08x\n", bit_field_st[i].byte1);
-        printf("bit_field_st.2\t%08x\n", bit_field_st[i].byte2);
-        printf("bit_field_st.3\t%08x\n", bit_field_st[i].byte3);
-        printf("bit_field_st.92\t%08x\n", bit_field_st[i].byte92);
-    }
-    {
-        union Data data;
-        data.whole = 0x123456789ab0c1d2; // 1311768467462996434
-        printf("data.bf\t%016x\n", data.bf);
-        printf("data.bf.0\t%08x\n", data.bf.byte0);
-        printf("data.bf.1\t%08x\n", data.bf.byte1);
-        printf("data.bf.2\t%08x\n", data.bf.byte2);
-        printf("data.bf.3\t%08x\n", data.bf.byte3);
-        printf("data.bf.92\t%08x\n", data.bf.byte92);
-    }
+    DPRINT_FUNCNAME();
+    return 0;
 }
 
-/*!
- * @brief AFE main like proc
- * @param argc arg count
- * @param argv string value args
- * @return
- */
-int afe_cmd_proc(int argc, char const *argv[])
+COMMAND_HANDLER_V2(afe, afe_reset, __COUNTER__, "[abc:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:int]",
+                   "abc", NULL)
 {
-    display_sizeof();
-    for (int32_t i = 0; i < argc; i++) {
-        printf("%d: %s\n", i, argv[i]);
-    }
+    int cnt = ARGC;
+    char **vv = ARGV;
 
-    bit_field_test();
+    printf("file: %s, line: %d\n", __FILE__, __LINE__);
+    DPRINT_FUNCNAME(AAA);
+
+    while (*vv) {
+        printf("%s\n", *vv);
+        vv++;
+    }
 
     return 0;
 }
+
+#endif // 0
+
+command_registration afe_commands[__COUNTER__] = {
+    COMMAND_REGISTRATION_DONE,
+    COMMAND_REGISTRATION_DONE,
+};
+
+#if (__COUNTER__) <= (1)
+// START_REGISTE_CMD(check, afe_commands, __COUNTER__);
+#warning "please register at least one function"
+void afe_register_all_commands()
+{
+    printf("%d\n", 1);
+}
+#else
+
+void afe_register_all_commands()
+{
+    afe_register_commandhandler_0();
+    afe_register_commandhandler_1();
+}
+#endif

@@ -6,8 +6,12 @@
 # define the C compiler to use
 CC = gcc
 
+DEFINES		:= USE_ARGCV DEBUG
+
+DDEFINES	:= $(patsubst %,-D%, $(DEFINES:%/=%))
+
 # define any compile-time flags
-CFLAGS	:= -Wall -Wextra -g
+CFLAGS	:= -Wall -Wextra -g $(DDEFINES)
 
 # define library paths in addition to /usr/lib
 #   if I wanted to include libraries not in /usr/lib I'd specify

@@ -6,8 +6,10 @@
             "type": "cppdbg",
             "request": "launch",
             "args": [
-                "abc",
-                "123"
+                "pllsa",
+                "pllsa_reset",
+                "0",
+                "1"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

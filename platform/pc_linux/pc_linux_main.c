@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "pc_linux_main.h"
+
+#include "afe_co_int.h"
+
 #include "afe_common.h"
 
 #define nameof(obj) #obj
@@ -80,15 +84,6 @@ void display_sizeof()
 #endif // DEBUG
 }
 
-extern int afe_cmd_proc(int argc, char const *argv[]);
-
-#define aaaa         0
-#define bbbbbbbb     1
-
-#define bbbbbbbbssss 1
-
-/**/
-#define aaaaaabbbbbbbbssss 1
 
 int main(int argc, char const *argv[])
 // int main(int argc, const char *argv[])

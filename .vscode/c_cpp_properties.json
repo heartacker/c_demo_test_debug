@@ -8,6 +8,7 @@
             ],
             "defines": [
                 // "DEBUG"
+                "USE_ARGCV=1"
             ],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c99",

@@ -144,15 +144,15 @@ typedef struct _command_registration {
         thismodule##_commands[indexx].chain = subchain;                                                                \
     }
 
-#define COMMAND_HANDLER_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name, rtype, full_func_name...)       \
+#define COMMAND_HANDLER_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name, full_func_name...)              \
     extern __COMMAND_HANDLER(thismodule##_##func_name##_command_handler);                                              \
-    extern rtype full_func_name;                                                                                       \
-    DEFINE_REG_FUNC_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name, full_func_name;)                    \
+    extern int thismodule##_##func_name();                                                                                       \
+    DEFINE_REG_FUNC_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name)                                     \
     __COMMAND_HANDLER(thismodule##_##func_name##_command_handler)                                                      \
     {                                                                                                                  \
-        return full_func_name();                                                                                       \
+        return thismodule##_##func_name();                                                                                       \
     }                                                                                                                  \
-    rtype full_func_name
+    int thismodule##_##func_name
 
 #define ARGC (argc)
 #define ARGV (argv)

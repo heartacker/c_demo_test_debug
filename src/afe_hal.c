@@ -6,7 +6,7 @@
 #include "afe_hal.h"
 
 #include "afe.h"
-#include "pll2G.h"
+#include "pll2g.h"
 #include "pllsa.h"
 
 command_registration *global_thandler = NULL;

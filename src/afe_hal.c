@@ -1,10 +1,11 @@
 #include "stdio.h"
 #include "string.h"
 
+#include "afe_common.h"
+
 #include "afe_hal.h"
 
 #include "afe.h"
-
 #include "pllsa.h"
 
 extern void display_sizeof();
@@ -31,9 +32,27 @@ union Data {
 #else
 #endif // DATA_WHOLE
 
+int gline = 0;
+
 void bit_field_test()
 {
+    LINE_START_0(int, a);
+    int a1 = LINE_N(a);
+    printf("%d\n", a1);
+    int abc = GS_NEXT(gline);
+    int next = GS_NEXT(gline);
     struct bit_field_st bit_field_st[2];
+    int next1 = GS_NEXT(gline);
+    int next2 = GS_NEXT(gline);
+
+    printf("%d\n", GS_NEXT(gline));
+    printf("%d\n", GS_NEXT(gline));
+    printf("%d\n", GS_NEXT(gline));
+
+    for (int II = 0; II < 100; II++) {
+        printf("%d\n", GS_NEXT(gline));
+    }
+
     bit_field_st[0].byte0 = 0x12;
     bit_field_st[0].byte1 = 0x34;
     bit_field_st[0].byte2 = 0x56;
@@ -71,11 +90,12 @@ void goto_commands(const command_registration *commands, const int argc, const c
     // DPRINT_FUNCNAME(AAA);
 
     command_registration *thandler = commands;
+    // thandler = commands;
 
     while (*vv) {
         printf("%s\n", *vv);
 
-        thandler = commands;
+        // check all block
 
         while (!COMMAMDS_IS_NULL(thandler) || thandler->chain) {
             printf("%s\n", thandler->name);
@@ -83,7 +103,7 @@ void goto_commands(const command_registration *commands, const int argc, const c
             if (0 == strcmp(thandler->name, *vv)) { // function
                 thandler->handler(cnt, vv);
                 return;
-            } else if (0 == strcmp(thandler->submod, *vv)) { // function
+            } else if (0 == strcmp(thandler->module, *vv)) { // function
                 thandler = thandler->chain;
                 continue;
             } else {
@@ -116,7 +136,7 @@ void display_commands(const command_registration *commands, const int argc, cons
             printf("========== %s ==========\n", thandler->name);
             display_commands(thandler->chain, argc, argv);
         } else {
-            printf("%s", thandler->submod);
+            printf("%s", thandler->module);
             printf("\t%s", thandler->name);
             printf("\t%p", thandler->handler);
             printf("\t%s", thandler->usage);
@@ -157,7 +177,7 @@ int afe_cmd_proc(int argc, char const *argv[])
 }
 
 command_registration afe_hal_commands[] = {
-    {.submod = "afe",   .name = nameof(afe_commands),   .chain = afe_commands  },
-    {.submod = "pllsa", .name = nameof(pllsa_commands), .chain = pllsa_commands},
+    {.module = "afe",   .name = nameof(afe_commands),   .chain = afe_commands  },
+    {.module = "pllsa", .name = nameof(pllsa_commands), .chain = pllsa_commands},
     COMMAND_REGISTRATION_DONE,
 };

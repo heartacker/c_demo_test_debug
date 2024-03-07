@@ -17,19 +17,29 @@ COMMAND_HANDLER_V2(afe, afe_lock_dect, __COUNTER__, "[abc:iaaaaaaaaaaaaant]",
     return 0;
 }
 
-COMMAND_HANDLER_V2(afe, afe_reset, __COUNTER__, "[abc:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:int]",
-                   "abc", NULL)
+#define DEFINE_FUNC(NAME, typename0, typename1, types...) NAME(typename0, typename1 types)
+
+DEFINE_FUNC(int abc, int a, int b)
 {
-    int cnt = ARGC;
-    char **vv = ARGV;
+    return 0;
+}
 
-    printf("file: %s, line: %d\n", __FILE__, __LINE__);
-    DPRINT_FUNCNAME(AAA);
+COMMAND_HANDLER_V3(__COUNTER__, "help", NULL, "[abc:int]", afe, reset0, int afe_reset0(int a, int b))
+{
+}
 
-    while (*vv) {
-        printf("%s\n", *vv);
-        vv++;
-    }
+COMMAND_HANDLER_V4(__COUNTER__, NULL, "help", "[abc:int]", afe, reset, int, afe_reset(int a, int b))
+{
+    // int cnt = ARGC;
+    // char **vv = ARGV;
+
+    // printf("file: %s, line: %d\n", __FILE__, __LINE__);
+    // DPRINT_FUNCNAME(AAA);
+
+    // while (*vv) {
+    //     printf("%s\n", *vv);
+    //     vv++;
+    // }
 
     return 0;
 }
@@ -52,7 +62,7 @@ void afe_register_all_commands()
 
 void afe_register_all_commands()
 {
-    afe_register_commandhandler_0();
-    afe_register_commandhandler_1();
+    module_register_commandhandler_0();
+    module_register_commandhandler_1();
 }
 #endif

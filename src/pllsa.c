@@ -26,7 +26,7 @@ void pllsa_register_all_commands()
 
 void pllsa_register_all_commands()
 {
-    pllsa_register_commandhandler_0();
+    module_register_commandhandler_0();
     // pllsa_register_commandhandler_1();
 }
 #endif

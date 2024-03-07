@@ -36,11 +36,16 @@ command_registration pll2g_commands[__COUNTER__] = {
     COMMAND_REGISTRATION_DONE,
 };
 
-void pll2g_register_all_commands()
+void pll2g_register_all_commands(void *ownner)
 {
     memset(pll2g_commands, 0, ARRAY_LENS(pll2g_commands));
     module_register_commandhandler_0();
     // pllsa_register_commandhandler_1();
+    for (char i = 0; i < ARRAY_LENS(pll2g_commands); i++) {
+        if (!IS_COMMAND_NULL(pll2g_commands[i])) {
+            pll2g_commands[i].upperchain = ownner;
+        }
+    }
 }
 
 #endif

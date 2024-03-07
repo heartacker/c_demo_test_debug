@@ -54,7 +54,7 @@ COMMAND_REGISTER_V5(__COUNTER__, NULL, "help", "(uint32_t mask, char dif)", afe,
 #if (__COUNTER__) < (1)
 // START_REGISTE_CMD(check, afe_commands, __COUNTER__);
 #warning "please register at least one function"
-void afe_register_all_commands()
+void afe_register_all_commands(void *ownner)
 {
     printf("%d\n", 1);
 }
@@ -69,11 +69,17 @@ command_registration afe_commands[__COUNTER__ + 2] = {
     COMMAND_REGISTRATION_DONE
 };
 
-void afe_register_all_commands()
+void afe_register_all_commands(void *ownner)
 {
     // memset(afe_commands, 0, ARRAY_LENS(afe_commands));
     module_register_commandhandler_0();
     module_register_commandhandler_1();
     module_register_commandhandler_2();
+
+    for (char i = 0; i < ARRAY_LENS(afe_commands); i++) {
+        if (!IS_COMMAND_NULL(afe_commands[i])) {
+            afe_commands[i].upperchain = ownner;
+        }
+    }
 }
 #endif

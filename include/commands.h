@@ -87,7 +87,7 @@ typedef struct _command_registration {
      */
     const struct _command_registration *chain;
 
-    // const struct _command_registration *upperchain;
+    const struct _command_registration *upperchain;
 
     int rev;
 } command_registration;

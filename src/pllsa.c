@@ -31,7 +31,7 @@ int pllsa_reset(uint32_t mask, char dif, ...)
 #if (__COUNTER__) < (1)
 // START_REGISTE_CMD(check, afe_commands, __COUNTER__);
 // #warning "please register at least one function"
-void pllsa_register_all_commands()
+void pllsa_register_all_commands(void *owner)
 {
     printf("warning \"please register at least one function\"");
 }
@@ -45,11 +45,16 @@ command_registration pllsa_commands[__COUNTER__] = {
     COMMAND_REGISTRATION_DONE,
 };
 
-void pllsa_register_all_commands()
+void pllsa_register_all_commands(void *ownner)
 {
     memset(pllsa_commands, 0, ARRAY_LENS(pllsa_commands));
     module_register_commandhandler_0();
     // pllsa_register_commandhandler_1();
+    for (char i = 0; i < ARRAY_LENS(pllsa_commands); i++) {
+        if (!IS_COMMAND_NULL(pllsa_commands[i])) {
+            pllsa_commands[i].upperchain = ownner;
+        }
+    }
 }
 
 #endif

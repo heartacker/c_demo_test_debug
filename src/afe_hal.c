@@ -6,6 +6,7 @@
 #include "afe_hal.h"
 
 #include "afe.h"
+#include "pll2G.h"
 #include "pllsa.h"
 
 command_registration *global_thandler = NULL;
@@ -210,9 +211,9 @@ char cmdline[128];
  */
 int afe_cmd_proc(int argc, char const *argv[])
 {
-    afe_register_all_commands();
-    pllsa_register_all_commands();
-    pll2g_register_all_commands();
+    afe_register_all_commands(afe_hal_commands);
+    pllsa_register_all_commands(afe_commands);
+    pll2g_register_all_commands(afe_commands);
 
 #if DEBUG
     display_sizeof();

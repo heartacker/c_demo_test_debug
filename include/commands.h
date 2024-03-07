@@ -86,7 +86,14 @@ typedef struct _command_registration {
      * modules.
      */
     const struct _command_registration *chain;
+
+    // const struct _command_registration *upperchain;
+
+    int rev;
 } command_registration;
+
+#define START_REGISTER_COMMANDS(blocks) extern unsigned int *blocks##_commandp[]
+#define END_REGISTER_COMMANDS(blocks)   unsigned int *blocks_command[]
 
 #define DEFINE_REG_FUNC(module, func_name, feild, indexx, helpstr)                                                     \
     void register_commandhandler##_##indexx()                                                                          \
@@ -101,7 +108,7 @@ typedef struct _command_registration {
     DEFINE_REG_FUNC(thismodule, func_name, feild, indexx, helpstr)                                                     \
     __COMMAND_HANDLER(thismodule##_##func_name)
 
-#define DEFINE_REG_FUNC_V2(thismodule, func_name, indexx, usagestr, helpstr, subchain)                                 \
+#define DEFINE_REG_FUNC_V2(indexx, subchain, helpstr, usagestr, thismodule, func_name)                                 \
     static void module##_##register_commandhandler##_##indexx()                                                        \
     {                                                                                                                  \
         thismodule##_commands[indexx].module = #thismodule;                                                            \
@@ -112,12 +119,12 @@ typedef struct _command_registration {
         thismodule##_commands[indexx].chain = subchain;                                                                \
     }
 
-#define COMMAND_HANDLER_V2(thismodule, func_name, indexx, usagestr, helpstr, subchain)                                 \
+#define COMMAND_HANDLER_V2(indexx, subchain, helpstr, usagestr, thismodule, func_name)                                 \
     extern __COMMAND_HANDLER(func_name);                                                                               \
-    DEFINE_REG_FUNC_V2(thismodule, func_name, indexx, usagestr, helpstr, subchain)                                     \
+    DEFINE_REG_FUNC_V2(indexx, subchain, helpstr, usagestr, thismodule, func_name)                                     \
     __COMMAND_HANDLER(func_name)
 
-#define DEFINE_REG_FUNC_V3(indexx, helpstr, subchain, usagestr, thismodule, func_name, extra...)                       \
+#define DEFINE_REG_FUNC_V3(indexx, subchain, helpstr, usagestr, thismodule, func_name, extra...)                       \
     static void module##_##register_commandhandler##_##indexx()                                                        \
     {                                                                                                                  \
         thismodule##_commands[indexx].module = #thismodule;                                                            \
@@ -128,9 +135,9 @@ typedef struct _command_registration {
         thismodule##_commands[indexx].chain = subchain;                                                                \
     }
 
-#define COMMAND_HANDLER_V3(indexx, helpstr, fatherchain, usagestr, thismodule, func_name, extra...)                    \
+#define COMMAND_HANDLER_V3(indexx, subchain, helpstr, usagestr, thismodule, func_name, extra...)                       \
     extern __COMMAND_HANDLER(thismodule##_##func_name);                                                                \
-    DEFINE_REG_FUNC_V3(indexx, helpstr, fatherchain, usagestr, thismodule, func_name, extra)                           \
+    DEFINE_REG_FUNC_V3(indexx, subchain, helpstr, usagestr, thismodule, func_name, extra)                              \
     __COMMAND_HANDLER(thismodule##_##func_name)
 
 #define DEFINE_REG_FUNC_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name, extra...)                       \
@@ -144,18 +151,54 @@ typedef struct _command_registration {
         thismodule##_commands[indexx].chain = subchain;                                                                \
     }
 
-#define COMMAND_HANDLER_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name, full_func_name...)              \
-    extern __COMMAND_HANDLER(thismodule##_##func_name##_command_handler);                                              \
-    extern int thismodule##_##func_name();                                                                                       \
-    DEFINE_REG_FUNC_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name)                                     \
+#define COMMAND_HANDLER_V4(thismodule, func_name, full_func_name, args...)                                             \
+    extern int thismodule##_##func_name##full_func_name;                                                               \
     __COMMAND_HANDLER(thismodule##_##func_name##_command_handler)                                                      \
-    {                                                                                                                  \
-        return thismodule##_##func_name();                                                                                       \
-    }                                                                                                                  \
-    int thismodule##_##func_name
+    // {                                                                                                               \
+    //     return thismodule##_##func_name(args);                                                                      \
+    // }
 
-#define ARGC (argc)
-#define ARGV (argv)
+#define COMMAND_REGISTER_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name, full_func_name, args...)       \
+    /* extern __COMMAND_HANDLER(thismodule##_##func_name##_command_handler); */                                        \
+    /* extern int thismodule##_##func_name##full_func_name; */                                                         \
+    DEFINE_REG_FUNC_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name)                                     \
+                                                                                                                       \
+    int thismodule##_##func_name##full_func_name
+
+#define COMMAND_HANDLER_V5(thismodule, func_name, full_func_name, args...)                                             \
+    extern full_func_name;                                                                                             \
+    __COMMAND_HANDLER(thismodule##_##func_name##_command_handler)                                                      \
+    // {                                                                                                               \
+    //     return thismodule##_##func_name(args);                                                                      \
+    // }
+
+#define COMMAND_REGISTER_V5(indexx, subchain, helpstr, usagestr, thismodule, func_name, full_func_name, args...)       \
+    /* extern __COMMAND_HANDLER(thismodule##_##func_name##_command_handler); */                                        \
+    /* extern int thismodule##_##func_name##full_func_name; */                                                         \
+    DEFINE_REG_FUNC_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name)                                     \
+                                                                                                                       \
+    full_func_name
+
+#define COMMAND_HANDLER_V6(thismodule, func_name, full_func_name, args...)                                             \
+    extern full_func_name;                                                                                             \
+    __COMMAND_HANDLER(thismodule##_##func_name##_command_handler)                                                      \
+    // {                                                                                                               \
+    //     return thismodule##_##func_name(args);                                                                      \
+    // }
+
+#define COMMAND_REGISTER_V6(indexx, subchain, helpstr, usagestr, thismodule, func_name, full_func_name, args...)       \
+    /* extern __COMMAND_HANDLER(thismodule##_##func_name##_command_handler); */                                        \
+    /* extern int thismodule##_##func_name##full_func_name; */                                                         \
+    DEFINE_REG_FUNC_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name)                                     \
+    full_func_name
+
+#include "string.h"
+#define ARGC                  (argc)
+#define ARGV                  (argv)
+#define ARGV2_uint32_t(index) strtol(argv[index], NULL, 10)
+#define ARGV2_int32_t(index)  atoi(argv[index])
+#define ARGV2_pchar(index)    argv[index]
+#define ARGV2_char(index)     *argv[index]
 
 /** Use this as the last entry in an array of command_registration records. */
 #define COMMAND_REGISTRATION_DONE                                                                                      \
@@ -163,7 +206,17 @@ typedef struct _command_registration {
         .module = NULL, .name = NULL, .handler = NULL, .usage = NULL, .help = NULL, .chain = NULL                      \
     }
 
-#define COMMAMDS_IS_NULL(thecmd) (thecmd->name == NULL || thecmd->handler == NULL)
+#define NO_EXE (0x22ACCE55)
+
+#define IS_COMMANDP_NULL(cmdd)                                                                                         \
+    (cmdd->module == NULL && cmdd->name == NULL && cmdd->handler == NULL && cmdd->usage == NULL &&                     \
+     cmdd->help == NULL && cmdd->chain == NULL)
+
+#define IS_COMMAND_NULL(cmdd)                                                                                          \
+    (cmdd.module == NULL && cmdd.name == NULL && cmdd.handler == NULL && cmdd.usage == NULL && cmdd.help == NULL &&    \
+     cmdd.chain == NULL)
+
+// #define COMMAMDS_IS_NULL(thecmd) (thecmd->name == NULL || thecmd->handler == NULL)
 
 #define START_REGISTE_CMD(funcname, fieldname, iid, ...)                                                               \
     int funcname##_##fieldname()                                                                                       \
@@ -171,7 +224,7 @@ typedef struct _command_registration {
                                                                                                                        \
         int __i = iid;                                                                                                 \
         command_registration *_thecmd = &fieldname[__i];                                                               \
-        if (COMMAMDS_IS_NULL(_thecmd)) {                                                                               \
+        if (IS_COMMANDP_NULL(_thecmd)) {                                                                               \
             return -1;                                                                                                 \
         }                                                                                                              \
         return 0;                                                                                                      \

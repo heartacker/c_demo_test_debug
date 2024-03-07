@@ -11,6 +11,7 @@ extern "C" {
 #include "commands.h"
 
 extern command_registration afe_hal_commands[];
+extern command_registration wifi_commands[];
 
 #ifdef __cplusplus
 #if __cplusplus

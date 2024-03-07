@@ -8,6 +8,8 @@
 #include "afe.h"
 #include "pllsa.h"
 
+command_registration *global_thandler = NULL;
+
 extern void display_sizeof();
 
 #define DATA_WHOLE 1
@@ -81,63 +83,23 @@ void bit_field_test()
     }
 }
 
-void goto_commands(const command_registration *commands, const int argc, const char *argv[])
-{
-    int cnt = ARGC;
-    char **vv = ARGV;
-
-    // printf("file: %s, line: %d\n", __FILE__, __LINE__);
-    // DPRINT_FUNCNAME(AAA);
-
-    command_registration *thandler = commands;
-    // thandler = commands;
-
-    while (*vv) {
-        printf("%s\n", *vv);
-
-        // check all block
-
-        while (!COMMAMDS_IS_NULL(thandler) || thandler->chain) {
-            printf("%s\n", thandler->name);
-
-            if (0 == strcmp(thandler->name, *vv)) { // function
-                thandler->handler(cnt, vv);
-                return;
-            } else if (0 == strcmp(thandler->module, *vv)) { // function
-                thandler = thandler->chain;
-                continue;
-            } else {
-                if (thandler->chain) {
-                    // printf("========== %s ==========\n", thandler->name);
-                    goto_commands(thandler->chain, argc, argv);
-                } else {
-                    // printf("%s", thandler->submod);
-                    // printf("\t%s", thandler->name);
-                    // printf("\t%p", thandler->handler);
-                    // printf("\t%s", thandler->usage);
-                    // printf("\t%s", thandler->help);
-                    // printf("\t%p", thandler->chain);
-                    // printf("\n");
-                    // thandler->handler(argc, argv);
-                }
-            }
-            thandler++;
-        }
-        cnt--;
-        vv++;
-    }
-}
-
-void display_commands(const command_registration *commands, const int argc, const char *argv[])
+void display_commands(const command_registration *commands, const int argc, const char *argv[], int level)
 {
     command_registration *thandler = commands;
-    while (!COMMAMDS_IS_NULL(thandler) || thandler->chain) {
+    while (!IS_COMMANDP_NULL(thandler)) {
         if (thandler->chain) {
-            printf("========== %s ==========\n", thandler->name);
-            display_commands(thandler->chain, argc, argv);
+            for (int i = 0; i < level; i++) {
+                printf("  ");
+            }
+            printf("%s.%s\n", thandler->module, thandler->name);
+            display_commands(thandler->chain, argc, argv, level + 1);
         } else {
+            for (int i = 0; i < level; i++) {
+                printf("  ");
+            }
+
             printf("%s", thandler->module);
-            printf("\t%s", thandler->name);
+            printf(".%s", thandler->name);
             printf("\t%p", thandler->handler);
             printf("\t%s", thandler->usage);
             printf("\t%s", thandler->help);
@@ -148,6 +110,98 @@ void display_commands(const command_registration *commands, const int argc, cons
         thandler++;
     }
 }
+
+command_registration *goto_commands(const command_registration *commands, const int argc, const char *argv[], int level)
+{
+    int cnt = ARGC;
+    char **vv = ARGV;
+
+    // printf("file: %s, line: %d\n", __FILE__, __LINE__);
+    // DPRINT_FUNCNAME(AAA);
+
+    command_registration *thandler = commands;
+    command_registration *iterhandler = thandler;
+    command_registration *temp = NULL;
+    // thandler = commands;
+
+    if (*vv) {
+        printf("$ %s\n", *vv);
+
+        // check all block
+        while (!IS_COMMANDP_NULL(iterhandler)) {
+            //! printf("# %s\n", iterhandler->module);
+            if (iterhandler->chain && (0 == strcmp(iterhandler->module, *vv))) {
+                iterhandler = iterhandler->chain;
+                return goto_commands(iterhandler, argc - 1, argv + 1, level + 1);
+            } else {
+            }
+            iterhandler++;
+        }
+
+        // check all function
+
+        iterhandler = thandler;
+
+        while (!IS_COMMANDP_NULL(iterhandler)) {
+            //! printf("- %s\n", iterhandler->name);
+
+            if (0 == strcmp(iterhandler->name, *vv)) { // function
+                printf("execute: %s.%s\n", iterhandler->module, iterhandler->name);
+                iterhandler->rev = NO_EXE;
+                iterhandler->rev = iterhandler->handler(cnt, vv);
+                return iterhandler;
+            }
+            iterhandler++;
+        }
+
+        // check all subchain
+        iterhandler = thandler;
+
+        while (!IS_COMMANDP_NULL(iterhandler)) {
+
+            if (iterhandler->chain) {
+                //! printf("## %s\n", iterhandler->name);
+                temp = goto_commands(iterhandler->chain, argc, argv, level + 1);
+                if (IS_COMMANDP_NULL(temp)) {
+                    iterhandler++;
+                    continue;
+                } else {
+                    return temp;
+                }
+            }
+            iterhandler++;
+        }
+
+        // check all subchain
+        iterhandler = thandler;
+
+        while (!IS_COMMANDP_NULL(iterhandler)) {
+
+            if (iterhandler->chain) {
+                //! printf("## %s\n", iterhandler->name);
+                temp = goto_commands(iterhandler->chain, argc, argv, level + 1);
+                if (IS_COMMANDP_NULL(temp)) {
+                    iterhandler++;
+                    continue;
+                } else {
+                    return temp;
+                }
+            }
+            iterhandler++;
+        }
+    }
+
+    if (IS_COMMANDP_NULL(iterhandler)) {
+        printf("cannot find the command: %s\n", *vv);
+        if (level == 0) {
+            display_commands(thandler, argc, argv, 0);
+        }
+        return thandler;
+    } else {
+        return iterhandler;
+    }
+}
+char cmdline[128];
 /*!
  * @brief AFE main like proc
  * @param argc arg count
@@ -158,6 +212,7 @@ int afe_cmd_proc(int argc, char const *argv[])
 {
     afe_register_all_commands();
     pllsa_register_all_commands();
+    pll2g_register_all_commands();
 
 #if DEBUG
     display_sizeof();
@@ -167,17 +222,46 @@ int afe_cmd_proc(int argc, char const *argv[])
     for (int32_t i = 0; i < argc; i++) {
         printf("%d: %s\n", i, argv[i]);
     }
-    display_commands(afe_hal_commands, argc, argv);
-
     printf("============================\n\n\n");
+    display_commands(wifi_commands, argc, argv, 0);
 
-    goto_commands(afe_hal_commands, argc - 1, &argv[1]);
+    if (!global_thandler)
+        global_thandler = wifi_commands;
+    printf("============================\n\n\n");
+    global_thandler = goto_commands(global_thandler, argc - 1, &argv[1], 0);
+    // global_thandler = goto_commands(global_thandler, argc - 1, &argv[1], 0);
+    printf("global_thandler: name = %s, retv=%d\n", global_thandler->name, global_thandler->rev);
 
+    while (1) {
+        printf("Enter a command: ");
+        scanf(" %s", cmdline);
+        char c = *cmdline;
+        global_thandler = goto_commands(global_thandler, 1, cmdline, 0);
+        // Process the command
+        switch (c && (strlen(cmdline) == 1)) {
+        case 'A':
+            // Process command A
+            break;
+        case 'B':
+            // Process command B
+            break;
+        case 'Q':
+            // Process command Q
+            return 0; // Exit the program
+        }
+    }
     return 0;
 }
 
 command_registration afe_hal_commands[] = {
-    {.module = "afe",   .name = nameof(afe_commands),   .chain = afe_commands  },
-    {.module = "pllsa", .name = nameof(pllsa_commands), .chain = pllsa_commands},
+  // {.module = "afe", .name = nameof(afe_commands), .chain = NULL        },
+    {.module = "afe", .name = nameof(afe_commands), .chain = afe_commands},
+
+    COMMAND_REGISTRATION_DONE,
+};
+
+command_registration wifi_commands[] = {
+    {.module = "wifi", .name = nameof(afe_hal_commands), .chain = afe_hal_commands},
+ // {.module = "wifi", .name = nameof(afe_hal2_commands), .chain = afe_hal_commands},
     COMMAND_REGISTRATION_DONE,
 };

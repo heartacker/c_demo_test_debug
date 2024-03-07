@@ -26,5 +26,6 @@
         "*.cfg": "tcl",
         "stdio.h": "c"
     },
-    "debug.inlineValues": "on"
+    "debug.inlineValues": "on",
+    // "C_Cpp.clang_format_fallbackStyle": "{ BaseOnStyle: LLVM, BreakBeforeBraces: Linux, ColumnLimit: 120, IndentWidth: 4, TabWidth: 4, AllowShortFunctionsOnASingleLine: None, AllowShortBlocksOnASingleLine: Never, AllowShortEnumsOnASingleLine: False,AllowShortLambdasOnASingleLine: None, AlignArrayOfStructures: Left, AlignConsecutiveMacros: AcrossEmptyLines, AlignConsecutiveBitFields: Consecutive, BinPackParameters: True ,BinPackArguments: True ,AllowAllArgumentsOnNextLine: True }"
 }

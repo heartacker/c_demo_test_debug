@@ -199,6 +199,9 @@ typedef struct _command_registration {
 #define ARGV2_int32_t(index)  atoi(argv[index])
 #define ARGV2_pchar(index)    argv[index]
 #define ARGV2_char(index)     *argv[index]
+#define ARGV2_bool(index)                                                                                              \
+    (strcmp(argv[index], "0") || (strcmp(argv[index], "true") == 0) || (strcmp(argv[index], "TRUE") == 0) ||           \
+     (strcmp(argv[index], "True") == 0))
 
 /** Use this as the last entry in an array of command_registration records. */
 #define COMMAND_REGISTRATION_DONE                                                                                      \

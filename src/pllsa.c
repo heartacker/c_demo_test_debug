@@ -30,8 +30,8 @@ int pllsa_reset(uint32_t mask, char dif, ...)
     return 0;
 }
 
-COMMAND_HANDLER(__COUNTER__, NULL, "kvco calibration", "(bool recal)", pllsa, kvco_calib, pllsa_kvco_calib(int recal),
-                (int, recal))
+COMMAND_HANDLER(__COUNTER__, NULL, "kvco calibration", "(bool recal)", pllsa, kvco_calib,
+                pllsa_kvco_calib(int recal), (int, recal))
 {
     int recal = ARGV2_bool(1);
     return pllsa_kvco_calib(recal);
@@ -40,6 +40,18 @@ COMMAND_HANDLER(__COUNTER__, NULL, "kvco calibration", "(bool recal)", pllsa, kv
 int pllsa_kvco_calib(int recal)
 {
     return recal * 1024;
+}
+
+COMMAND_HANDLER(__COUNTER__, NULL, "kvco calibration", "(bool recal)", pllsa, enable_testpath,
+                pllsa_enable_testpath(uint8_t path_select), (uint8_t path_select))
+{
+    uint8_t path_select = (uint8_t)ARGV2_int32_t(1);
+    return pllsa_enable_testpath(path_select);
+}
+
+int pllsa_enable_testpath(uint8_t path_select)
+{
+    return path_select * +3000;
 }
 
 #if (__COUNTER__) < (1)

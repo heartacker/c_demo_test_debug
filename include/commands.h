@@ -207,7 +207,7 @@ return thismodule##_##func_name(args);                                          
  * ! register function arg and argc
  */
 #define COMMAND_HANDLER(indexx, subchain, helpstr, usagestr, thismodule, func_name, full_func_name, arg_t_n...)        \
-    extern full_func_name;                                                                                             \
+    extern int full_func_name;                                                                                             \
     extern __COMMAND_HANDLER(thismodule##_##func_name##_command_handler);                                              \
     DEFINE_REG_FUNC_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name)                                     \
     __COMMAND_HANDLER(thismodule##_##func_name##_command_handler)

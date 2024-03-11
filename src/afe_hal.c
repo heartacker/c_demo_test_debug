@@ -209,7 +209,10 @@ command_registration *goto_commands(const command_registration *commands, const 
 
 #endif // OLDER
 
+extern void printsss();
+
 char cmdline[128];
+
 /*!
  * @brief AFE main like proc
  * @param argc arg count
@@ -218,6 +221,7 @@ char cmdline[128];
  */
 int afe_cmd_proc(int argc, char const *argv[])
 {
+    printsss();
     afe_register_all_commands((int)afe_commands, argv);
     pllsa_register_all_commands(afe_commands);
     pll2g_register_all_commands(afe_commands);
@@ -286,3 +290,12 @@ command_registration wifi_commands[] = {
  // {.module = "wifi", .name = nameof(afe_hal2_commands), .chain = afe_hal_commands},
     COMMAND_REGISTRATION_DONE,
 };
+
+#define a(b)  a##b
+#define aa(b) "aa" #b "\n"
+
+void printsss()
+{
+    printf(aa((__COUNTER__)));
+    printf(aa(__COUNTER__));
+}

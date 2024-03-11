@@ -11,7 +11,8 @@ extern "C" {
 #include "commands.h"
 
 extern command_registration afe_commands[];
-extern void afe_register_all_commands(void *owner);
+// extern void afe_register_all_commands(void *owner);
+extern void afe_register_all_commands(int argc, char *argv[]);
 
 #ifdef __cplusplus
 #if __cplusplus

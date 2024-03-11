@@ -19,18 +19,19 @@ void display_commands(command_registration *commands, int argc, char *argv[], in
     while (!IS_COMMANDP_NULL(thandler)) {
         if (thandler->chain) {
             for (int i = 0; i < level - 1; i++) {
-                printf("    ");
+                printf("  ");
             }
             if (level > 0)
-                printf("|-> ");
+                printf("  >");
             printf("%s.%s\n", thandler->module, thandler->name);
             display_commands(thandler->chain, argc, argv, level + 1);
         } else {
+            printf("  ");
             for (int i = 0; i < level - 1; i++) {
-                printf("    ");
+                printf("  ");
             }
 
-            printf("%s", thandler->module);
+            // printf("%s", thandler->module);
             printf(".%s", thandler->name);
             // printf("\t%p", thandler->handler);
             // printf("\t%d", 0x1000_2000);

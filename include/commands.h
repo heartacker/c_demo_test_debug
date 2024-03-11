@@ -77,7 +77,7 @@ typedef struct _command_registration {
     const char *help;
 
     /** a string listing the options and arguments, required or optional */
-    //! subchain
+    //! upchain
     const char *usage;
 
     /**
@@ -99,53 +99,7 @@ typedef struct _command_registration {
 
 #define END_REGISTER_COMMANDS(blocks, number) command_registration blocks##_##commands[number]
 
-#define DEFINE_REG_FUNC(module, func_name, feild, indexx, helpstr)                                                     \
-    void register_commandhandler##_##indexx()                                                                          \
-    {                                                                                                                  \
-        feild[indexx].name = #module "_" #func_name;                                                                   \
-        feild[indexx].handler = module##_##func_name;                                                                  \
-        feild[indexx].help = #helpstr;                                                                                 \
-    }
-
-#define COMMAND_HANDLER2(thismodule, func_name, feild, indexx, helpstr)                                                \
-    extern __COMMAND_HANDLER(thismodule##_##func_name);                                                                \
-    DEFINE_REG_FUNC(thismodule, func_name, feild, indexx, helpstr)                                                     \
-    __COMMAND_HANDLER(thismodule##_##func_name)
-
-#define DEFINE_REG_FUNC_V2(indexx, subchain, helpstr, usagestr, thismodule, func_name)                                 \
-    static void module##_##register_commandhandler##_##indexx()                                                        \
-    {                                                                                                                  \
-        thismodule##_commands[indexx].module = #thismodule;                                                            \
-        thismodule##_commands[indexx].name = #func_name;                                                               \
-        thismodule##_commands[indexx].handler = func_name;                                                             \
-        thismodule##_commands[indexx].help = helpstr;                                                                  \
-        thismodule##_commands[indexx].usage = usagestr;                                                                \
-        thismodule##_commands[indexx].chain = subchain;                                                                \
-    }
-
-#define COMMAND_HANDLER_V2(indexx, subchain, helpstr, usagestr, thismodule, func_name)                                 \
-    extern __COMMAND_HANDLER(func_name);                                                                               \
-    DEFINE_REG_FUNC_V2(indexx, subchain, helpstr, usagestr, thismodule, func_name)                                     \
-    __COMMAND_HANDLER(func_name)
-
-#define DEFINE_REG_FUNC_V3(indexx, subchain, helpstr, usagestr, thismodule, func_name, extra...)                       \
-    static void module##_##register_commandhandler##_##indexx()                                                        \
-    {                                                                                                                  \
-        thismodule##_commands[indexx].module = #thismodule;                                                            \
-        thismodule##_commands[indexx].name = #thismodule "_" #func_name;                                               \
-        thismodule##_commands[indexx].handler = thismodule##_##func_name;                                              \
-        thismodule##_commands[indexx].help = helpstr;                                                                  \
-        thismodule##_commands[indexx].usage = usagestr;                                                                \
-        thismodule##_commands[indexx].chain = subchain;                                                                \
-    }
-
-#define COMMAND_ARGC_ARGV(indexx, subchain, helpstr, usagestr, thismodule, func_name, extra...)                        \
-    extern __COMMAND_HANDLER(thismodule##_##func_name);                                                                \
-    DEFINE_REG_FUNC_V3(indexx, subchain, helpstr, usagestr, thismodule, func_name, extra)                              \
-    __COMMAND_HANDLER(thismodule##_##func_name)
-
-/*====================================================================================================================*/
-#define DEFINE_REG_FUNC_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name, extra...)                       \
+#define __COMMAND_HANDLER_REGISTER(indexx, upchain, helpstr, usagestr, thismodule, func_name, extra...)                \
     static void module##_##register_commandhandler##_##indexx()                                                        \
     {                                                                                                                  \
         thismodule##_commands[indexx].module = #thismodule;                                                            \
@@ -153,63 +107,100 @@ typedef struct _command_registration {
         thismodule##_commands[indexx].handler = thismodule##_##func_name##_command_handler;                            \
         thismodule##_commands[indexx].help = helpstr;                                                                  \
         thismodule##_commands[indexx].usage = usagestr;                                                                \
-        thismodule##_commands[indexx].chain = subchain;                                                                \
+        thismodule##_commands[indexx].chain = NULL;                                                                    \
+        thismodule##_commands[indexx].upperchain = upchain;                                                            \
+    }
+
+#define __COMMAND_HANDLER_REGISTER_ARGC_ARGV(indexx, upchain, helpstr, usagestr, thismodule, func_name, extra...)      \
+    static void module##_##register_commandhandler##_##indexx(void *pupperchain)                                       \
+    {                                                                                                                  \
+        thismodule##_commands[indexx].module = #thismodule;                                                            \
+        thismodule##_commands[indexx].name = #thismodule "_" #func_name;                                               \
+        thismodule##_commands[indexx].handler = thismodule##_##func_name;                                              \
+        thismodule##_commands[indexx].help = helpstr;                                                                  \
+        thismodule##_commands[indexx].usage = usagestr;                                                                \
+        thismodule##_commands[indexx].chain = NULL;                                                                    \
+        thismodule##_commands[indexx].upperchain = pupperchain;                                                        \
+    }
+
+#define COMMAND_HANDLER2(thismodule, func_name, feild, indexx, helpstr)                                                \
+    extern __COMMAND_HANDLER(thismodule##_##func_name);                                                                \
+    __COMMAND_HANDLER_REGISTER(thismodule, func_name, feild, indexx, helpstr)                                          \
+    __COMMAND_HANDLER(thismodule##_##func_name)
+
+/*====================================================================================================================*/
+#define __COMMAND_HANDLER_REGISTER_UP(indexx, upchain, helpstr, usagestr, thismodule, func_name, extra...)             \
+    static void module##_##register_commandhandler##_##indexx(void *pupperchain)                                       \
+    {                                                                                                                  \
+        thismodule##_commands[indexx].module = #thismodule;                                                            \
+        thismodule##_commands[indexx].name = #thismodule "_" #func_name;                                               \
+        thismodule##_commands[indexx].handler = thismodule##_##func_name##_command_handler;                            \
+        thismodule##_commands[indexx].help = helpstr;                                                                  \
+        thismodule##_commands[indexx].usage = usagestr;                                                                \
+        thismodule##_commands[indexx].chain = NULL;                                                                    \
+        thismodule##_commands[indexx].upperchain = pupperchain;                                                        \
     }
 
 #define COMMAND_HANDLER_V4(thismodule, func_name, full_func_name, args...)                                             \
     extern int thismodule##_##func_name##full_func_name;                                                               \
     __COMMAND_HANDLER(thismodule##_##func_name##_command_handler)
 
-#define COMMAND_REGISTER_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name, full_func_name, args...)       \
+#define COMMAND_REGISTER_V4(indexx, upchain, helpstr, usagestr, thismodule, func_name, full_func_name, args...)        \
     /* extern __COMMAND_HANDLER(thismodule##_##func_name##_command_handler); */                                        \
     /* extern int thismodule##_##func_name##full_func_name; */                                                         \
-    DEFINE_REG_FUNC_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name)                                     \
+    __COMMAND_HANDLER_REGISTER(indexx, upchain, helpstr, usagestr, thismodule, func_name)                              \
                                                                                                                        \
     int thismodule##_##func_name##full_func_name
 
-//! V5
-#define COMMAND_HANDLER_V5(thismodule, func_name, full_func_name, args...)                                             \
-    extern full_func_name;                                                                                             \
-    __COMMAND_HANDLER(thismodule##_##func_name##_command_handler) /*                                                   \
-{                                                                                                                      \
-return thismodule##_##func_name(args);                                                                                 \
-} */
-
-#define COMMAND_REGISTER_V5(indexx, subchain, helpstr, usagestr, thismodule, func_name, full_func_name, args...)       \
-    /* extern __COMMAND_HANDLER(thismodule##_##func_name##_command_handler); */                                        \
-    /* extern int thismodule##_##func_name##full_func_name; */                                                         \
-    DEFINE_REG_FUNC_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name)                                     \
-                                                                                                                       \
-    full_func_name
-
+#if 1 //! V6
 /**
  * ! register function arg and argc
  */
 #define COMMAND_HANDLER_V6(thismodule, func_name, full_func_name, args...)                                             \
     extern full_func_name;                                                                                             \
-    __COMMAND_HANDLER(thismodule##_##func_name##_command_handler) /*                                                   \
-{                                                                                                                      \
-return thismodule##_##func_name(args);                                                                                 \
-} */
+    __COMMAND_HANDLER(thismodule##_##func_name##_command_handler)
 
 /**
  * ! register function @brief COMMAND_HANDLER_V6
  */
-#define COMMAND_REGISTER_V6(indexx, subchain, helpstr, usagestr, thismodule, func_name, full_func_name, args...)       \
+#define COMMAND_REGISTER_V6(indexx, upchain, helpstr, usagestr, thismodule, func_name, full_func_name, args...)        \
     /* extern __COMMAND_HANDLER(thismodule##_##func_name##_command_handler); */                                        \
     /* extern int thismodule##_##func_name##full_func_name; */                                                         \
-    DEFINE_REG_FUNC_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name)                                     \
+    __COMMAND_HANDLER_REGISTER_UP(indexx, upchain, helpstr, usagestr, thismodule, func_name)                           \
     full_func_name
+
+#endif // 0
 
 #define ARG_DIV(TYPE, NAME) TYPE NAME
 
 /**
- * ! register function arg and argc
+ * ! register (maybe just for debug) function  with (argc/argv)
  */
-#define COMMAND_HANDLER(indexx, subchain, helpstr, usagestr, thismodule, func_name, full_func_name, arg_t_n...)        \
-    extern int full_func_name;                                                                                             \
+
+#define COMMAND_ARGC_ARGV(indexx, upchain, helpstr, usagestr, thismodule, func_name, extra...)                         \
+    extern __COMMAND_HANDLER(thismodule##_##func_name);                                                                \
+    __COMMAND_HANDLER_REGISTER_ARGC_ARGV(indexx, upchain, helpstr, usagestr, thismodule, func_name, extra)             \
+    __COMMAND_HANDLER(thismodule##_##func_name)
+
+/**
+ * ! register function related commandhandler without args
+ */
+#define COMMAND_HANDLER_NOARGS(indexx, upchain, helpstr, usagestr, thismodule, func_name, full_func_name, arg_t_n...)  \
+    extern int full_func_name;                                                                                         \
     extern __COMMAND_HANDLER(thismodule##_##func_name##_command_handler);                                              \
-    DEFINE_REG_FUNC_V4(indexx, subchain, helpstr, usagestr, thismodule, func_name)                                     \
+    __COMMAND_HANDLER_REGISTER_UP(indexx, upchain, helpstr, usagestr, thismodule, func_name)                           \
+    __COMMAND_HANDLER(thismodule##_##func_name##_command_handler)                                                      \
+    {                                                                                                                  \
+        return full_func_name;                                                                                         \
+    }
+
+/**
+ * ! register function related commandhandler with args
+ */
+#define COMMAND_HANDLER(indexx, upchain, helpstr, usagestr, thismodule, func_name, full_func_name, arg_t_n...)         \
+    extern int full_func_name;                                                                                         \
+    extern __COMMAND_HANDLER(thismodule##_##func_name##_command_handler);                                              \
+    __COMMAND_HANDLER_REGISTER_UP(indexx, upchain, helpstr, usagestr, thismodule, func_name)                           \
     __COMMAND_HANDLER(thismodule##_##func_name##_command_handler)
 
 #include "string.h"

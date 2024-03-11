@@ -22,45 +22,48 @@ DEFINE_FUNC(int abc, int a, int b, char c, char e)
 
 #endif // 1
 
-COMMAND_HANDLER_V2(__COUNTER__, NULL, " COMMAND_HANDLER_V2 ",
-                   "[abc:iaaaaaaaaaaaaant]", afe, afe_lock_dect)
-{
-    DPRINT_FUNCNAME();
-    return 0;
-}
-
-COMMAND_ARGC_ARGV(__COUNTER__, NULL, "afe_reset_argcv", "(int a, int b)", afe, afe_reset_argcv)
+COMMAND_HANDLER_NOARGS(__COUNTER__, NULL, " COMMAND_HANDLER_NOARGS afe_lock_dect", "()", afe, lock_dect,
+                       afe_lock_dect(), );
+int afe_lock_dect()
 {
     return 0;
 }
 
-COMMAND_HANDLER_V5(afe, reset, int afe_reset(uint32_t mask, char dif))
+COMMAND_HANDLER(__COUNTER__, NULL, "afe_reset", "(uint32_t mask, char dif)", afe, reset,
+                afe_reset(uint32_t mask, char dif), )
 {
     uint32_t mask = ARGV2_uint32_t(1);
     char dif = ARGV2_char(2);
     return afe_reset(mask, dif);
 }
 
-COMMAND_REGISTER_V5(__COUNTER__, NULL, "help", "(uint32_t mask, char dif)", afe, reset,
-                    int afe_reset(uint32_t mask, char dif))
+int afe_reset(uint32_t mask, char dif)
 {
 
     printf("%d, %c", mask, dif);
     return 0;
 }
 
+COMMAND_ARGC_ARGV(__COUNTER__, NULL, "afe_reset_argcv", "(int argc, char *argv[])", afe, reset_argcv)
+{
+    return 0;
+}
+
 #endif // 0
 
 #if (__COUNTER__) < (1)
+
 // START_REGISTE_CMD(check, afe_commands, __COUNTER__);
 #warning "please register at least one function"
-void afe_register_all_commands(void *ownner)
+void afe_register_all_commands(int p_int_ownner, char *argv[])
 {
     printf("%d\n", 1);
 }
+
 #else
 
 command_registration afe_commands[__COUNTER__ + 2] = {
+  // COMMAND_REGISTRATION_NONE,
     COMMAND_REGISTRATION_NONE,
     COMMAND_REGISTRATION_NONE,
     COMMAND_REGISTRATION_NONE,
@@ -69,16 +72,16 @@ command_registration afe_commands[__COUNTER__ + 2] = {
     COMMAND_REGISTRATION_DONE
 };
 
-void afe_register_all_commands(void *ownner)
+void afe_register_all_commands(int p_int_ownner, char *argv[])
 {
     // memset(afe_commands, 0, ARRAY_LENS(afe_commands));
-    module_register_commandhandler_0();
-    module_register_commandhandler_1();
-    module_register_commandhandler_2();
+    module_register_commandhandler_0(((int *)p_int_ownner));
+    module_register_commandhandler_1(((int *)p_int_ownner));
+    module_register_commandhandler_2(((int *)p_int_ownner));
 
     for (char i = 0; i < ARRAY_LENS(afe_commands); i++) {
         if (!IS_COMMAND_NULL(afe_commands[i])) {
-            afe_commands[i].upperchain = ownner;
+            afe_commands[i].upperchain = (void *)((int *)p_int_ownner);
         }
     }
 }

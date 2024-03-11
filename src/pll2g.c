@@ -8,14 +8,13 @@
 
 #include "commands.h"
 
-COMMAND_HANDLER_V5(pll2g, reset, int pll2g_reset(int32_t mask, int32_t b))
+COMMAND_HANDLER_V6(pll2g, reset, int pll2g_reset(int32_t mask, int32_t b))
 {
     int32_t b = ARGV2_int32_t(2);
     return pll2g_reset(0, b);
 }
 
-COMMAND_REGISTER_V5(__COUNTER__, NULL, "AaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaA",
-                    "AaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaA", pll2g, reset,
+COMMAND_REGISTER_V6(__COUNTER__, NULL, "pll2g_reset", "(int32_t mask, int32_t b)", pll2g, reset,
                     int pll2g_reset(int32_t mask, int32_t b))
 {
     return mask + b;
@@ -38,8 +37,7 @@ command_registration pll2g_commands[__COUNTER__] = {
 
 void pll2g_register_all_commands(void *ownner)
 {
-    // memset(pll2g_commands, 0, ARRAY_LENS(pll2g_commands));
-    module_register_commandhandler_0();
+    module_register_commandhandler_0(ownner);
     // pllsa_register_commandhandler_1();
     for (char i = 0; i < ARRAY_LENS(pll2g_commands); i++) {
         if (!IS_COMMAND_NULL(pll2g_commands[i])) {

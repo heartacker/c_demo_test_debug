@@ -218,7 +218,7 @@ char cmdline[128];
  */
 int afe_cmd_proc(int argc, char const *argv[])
 {
-    afe_register_all_commands(wifi_commands);
+    afe_register_all_commands((int)afe_commands, argv);
     pllsa_register_all_commands(afe_commands);
     pll2g_register_all_commands(afe_commands);
 
@@ -265,12 +265,14 @@ int afe_cmd_proc(int argc, char const *argv[])
     return 0;
 }
 
-// command_registration afe_hal_commands[] = {
-//   // {.module = "afe", .name = nameof(afe_commands), .chain = NULL        },
-//     {.module = "afe", .name = nameof(afe_commands), .chain = afe_commands},
+#if 0
+command_registration afe_hal_commands[] = {
+  // {.module = "afe", .name = nameof(afe_commands), .chain = NULL        },
+    {.module = "afe", .name = nameof(afe_commands), .chain = afe_commands},
 
-//     COMMAND_REGISTRATION_DONE,
-// };
+    COMMAND_REGISTRATION_DONE,
+};
+#endif // 0
 
 command_registration wifi_commands[] = {
     {

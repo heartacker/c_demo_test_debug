@@ -1,7 +1,10 @@
 #include "stdio.h"
 #include "string.h"
 
-#include "afe_common.h"
+#include "afe_co_int.h"
+
+// #include "afe_common.h"
+#include "commands.h"
 
 #include "afe_hal.h"
 
@@ -84,6 +87,7 @@ void bit_field_test()
     }
 }
 
+#if OLDER
 void display_commands(const command_registration *commands, const int argc, const char *argv[], int level)
 {
     command_registration *thandler = commands;
@@ -202,6 +206,9 @@ command_registration *goto_commands(const command_registration *commands, const 
         return iterhandler;
     }
 }
+
+#endif // OLDER
+
 char cmdline[128];
 /*!
  * @brief AFE main like proc
@@ -211,7 +218,7 @@ char cmdline[128];
  */
 int afe_cmd_proc(int argc, char const *argv[])
 {
-    afe_register_all_commands(afe_hal_commands);
+    afe_register_all_commands(wifi_commands);
     pllsa_register_all_commands(afe_commands);
     pll2g_register_all_commands(afe_commands);
 
@@ -229,15 +236,19 @@ int afe_cmd_proc(int argc, char const *argv[])
     if (!global_thandler)
         global_thandler = wifi_commands;
     printf("============================\n\n\n");
-    global_thandler = goto_commands(global_thandler, argc - 1, &argv[1], 0);
+    goto_commands(wifi_commands, &global_thandler, argc - 1, &argv[1], 0);
     // global_thandler = goto_commands(global_thandler, argc - 1, &argv[1], 0);
-    printf("global_thandler: name = %s, retv=%d\n", global_thandler->name, global_thandler->rev);
+    if (!IS_COMMANDP_NULL(global_thandler)) {
+        printf("global_thandler: name = %s, retv=%d\n", global_thandler->name, global_thandler->rev);
+    } else {
+        // NO_EXE
+    }
 
     while (1) {
         printf("Enter a command: ");
         scanf(" %s", cmdline);
         char c = *cmdline;
-        global_thandler = goto_commands(global_thandler, 1, cmdline, 0);
+        goto_commands(global_thandler, &global_thandler, 1, cmdline, 0);
         // Process the command
         switch (c && (strlen(cmdline) == 1)) {
         case 'A':
@@ -254,15 +265,22 @@ int afe_cmd_proc(int argc, char const *argv[])
     return 0;
 }
 
-command_registration afe_hal_commands[] = {
-  // {.module = "afe", .name = nameof(afe_commands), .chain = NULL        },
-    {.module = "afe", .name = nameof(afe_commands), .chain = afe_commands},
+// command_registration afe_hal_commands[] = {
+//   // {.module = "afe", .name = nameof(afe_commands), .chain = NULL        },
+//     {.module = "afe", .name = nameof(afe_commands), .chain = afe_commands},
 
-    COMMAND_REGISTRATION_DONE,
-};
+//     COMMAND_REGISTRATION_DONE,
+// };
 
 command_registration wifi_commands[] = {
-    {.module = "wifi", .name = nameof(afe_hal_commands), .chain = afe_hal_commands},
+    {
+     .module = "wifi",
+     .help = "",
+     .usage = "",
+     .handler = NULL,
+     .name = nameof(afe),
+     .chain = afe_commands,
+     },
  // {.module = "wifi", .name = nameof(afe_hal2_commands), .chain = afe_hal_commands},
     COMMAND_REGISTRATION_DONE,
 };

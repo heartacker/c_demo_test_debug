@@ -10,7 +10,7 @@
 
 COMMAND_HANDLER_V5(pll2g, reset, int pll2g_reset(int32_t mask, int32_t b))
 {
-    int32_t b = ARGV2_int32_t(1);
+    int32_t b = ARGV2_int32_t(2);
     return pll2g_reset(0, b);
 }
 
@@ -32,13 +32,13 @@ void pllsa_register_all_commands()
 #else
 
 command_registration pll2g_commands[__COUNTER__] = {
-    COMMAND_REGISTRATION_DONE,
+    COMMAND_REGISTRATION_NONE,
     COMMAND_REGISTRATION_DONE,
 };
 
 void pll2g_register_all_commands(void *ownner)
 {
-    memset(pll2g_commands, 0, ARRAY_LENS(pll2g_commands));
+    // memset(pll2g_commands, 0, ARRAY_LENS(pll2g_commands));
     module_register_commandhandler_0();
     // pllsa_register_commandhandler_1();
     for (char i = 0; i < ARRAY_LENS(pll2g_commands); i++) {

@@ -22,14 +22,14 @@ DEFINE_FUNC(int abc, int a, int b, char c, char e)
 
 #endif // 1
 
-COMMAND_HANDLER_V2(__COUNTER__, NULL, "aaaaaaaaaaaaaaaaaaaaaa COMMAND_HANDLER_V2 aaaaaaaaaaaaaaaaaaaa",
+COMMAND_HANDLER_V2(__COUNTER__, NULL, " COMMAND_HANDLER_V2 ",
                    "[abc:iaaaaaaaaaaaaant]", afe, afe_lock_dect)
 {
     DPRINT_FUNCNAME();
     return 0;
 }
 
-COMMAND_HANDLER_V3(__COUNTER__, NULL, "afe_reset0", "(int a, int b)", afe, reset0, int afe_reset0(int a, int b))
+COMMAND_ARGC_ARGV(__COUNTER__, NULL, "afe_reset_argcv", "(int a, int b)", afe, afe_reset_argcv)
 {
     return 0;
 }
@@ -61,11 +61,11 @@ void afe_register_all_commands(void *ownner)
 #else
 
 command_registration afe_commands[__COUNTER__ + 2] = {
-    COMMAND_REGISTRATION_DONE,
-    COMMAND_REGISTRATION_DONE,
-    COMMAND_REGISTRATION_DONE,
-    {.module = "pllsa", .name = nameof(pllsa_commands), .chain = pllsa_commands},
-    {.module = "pll2g", .name = nameof(pll2g_commands), .chain = pll2g_commands},
+    COMMAND_REGISTRATION_NONE,
+    COMMAND_REGISTRATION_NONE,
+    COMMAND_REGISTRATION_NONE,
+    {.module = "afe", .name = nameof(pllsa), .chain = pllsa_commands},
+    {.module = "afe", .name = nameof(pll2g), .chain = pll2g_commands},
     COMMAND_REGISTRATION_DONE
 };
 

@@ -1,5 +1,16 @@
 #ifndef __AFE_COMMON__H__
 #define __AFE_COMMON__H__
+
+#if defined(FW)
+//
+#include "co_int.h"
+
+#elif defined(PC_LINUX)
+
+#include "afe_co_int.h"
+
+#endif //
+
 #define DEBUG 1
 
 typedef int (*Exe)(int, char **);

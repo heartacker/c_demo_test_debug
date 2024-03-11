@@ -6,10 +6,13 @@
             "type": "cppdbg",
             "request": "launch",
             "args": [
-                // "pllsa",
-                "pll2g_reset1",
-                "ab",
-                "a"
+                "pllsa_kvco_calib",
+                "False",
+                "afe",
+                "pll2g",
+                "pll2g_reset",
+                "1100",
+                "22"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

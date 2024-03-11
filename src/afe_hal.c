@@ -243,9 +243,10 @@ int afe_cmd_proc(int argc, char const *argv[])
     goto_commands(wifi_commands, &global_thandler, argc - 1, &argv[1], 0);
     // global_thandler = goto_commands(global_thandler, argc - 1, &argv[1], 0);
     if (!IS_COMMANDP_NULL(global_thandler)) {
-        printf("global_thandler: name = %s, retv=%d\n", global_thandler->name, global_thandler->rev);
+        printf("find the command: name = %s, retv = %d\n", global_thandler->name, global_thandler->rev);
     } else {
-        // NO_EXE
+        printf("cannot find the command: %s\n", *argv);
+        display_commands(global_thandler, argc, argv, 0);
     }
 
     while (1) {

@@ -6,7 +6,7 @@
 # define the C compiler to use
 CC = gcc
 
-DEFINES		:= USE_ARGCV DEBUG
+DEFINES		:= USE_ARGCV DEBUG PC_LINUX
 
 DDEFINES	:= $(patsubst %,-D%, $(DEFINES:%/=%))
 

@@ -10,7 +10,7 @@ extern "C" {
 #include "afe_common.h"
 #include "commands.h"
 
-extern command_registration afe_hal_commands[];
+// extern command_registration afe_hal_commands[];
 extern command_registration wifi_commands[];
 
 #ifdef __cplusplus

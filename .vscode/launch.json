@@ -7,7 +7,7 @@
             "request": "launch",
             "args": [
                 "pllsa_kvco_calib",
-                "False",
+                "${command:debug-arg.prompt}", // "False",
                 "afe",
                 "pll2g",
                 "pll2g_reset",

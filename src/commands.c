@@ -4,16 +4,19 @@
 
 #include "commands.h"
 
-// #include "uart.h"
-#if defined(FW)
-
-#define printf yc_printf
-
-#elif defined(PC_LINUX)
-
+#if defined(PC_LINUX)
+#define printf(aaa...) printf(aaa)
+#else // defined(FW)
+#include "uart.h"
+#define printf(aaa...) yc_printf(aaa)
 #endif // PC_LINUX
 
-void display_commands(command_registration *commands, int argc, char *argv[], int level)
+#define DEBUG_CMD_PRINT(aaa...)
+#ifndef DEBUG_CMD_PRINT
+#define DEBUG_CMD_PRINT(aaa...) printf(aaa...)
+#endif // DEBUG_CMD_PRINT
+
+void display_commands(command_registration const *commands, int argc, char *argv[], int level)
 {
     command_registration *thandler = (command_registration *)commands;
     while (!IS_COMMANDP_NULL(thandler)) {
@@ -45,12 +48,7 @@ void display_commands(command_registration *commands, int argc, char *argv[], in
     }
 }
 
-#define DEBUG_CMD_PRINT
-#ifndef DEBUG_CMD_PRINT
-#define DEBUG_CMD_PRINT printf
-#endif // DEBUG_CMD_PRINT
-
-void goto_commands(command_registration *commands, command_registration **targcommand, int argc, char *argv[],
+void goto_commands(command_registration const *commands, command_registration **targcommand, int argc, char *argv[],
                    int level)
 {
     // int cnt = ARGC;
@@ -145,12 +143,14 @@ void goto_commands(command_registration *commands, command_registration **targco
     }
 
 RETURNCURRENT:
+#if 0
     if (IS_COMMANDP_NULL((chainiterhandler))) {
         if (level == 0) {
             printf("cannot find the command: %s\n", *argv);
             display_commands(iterhandler, argc, argv, 0);
         }
     }
+#endif // 0
 
     *targcommand = chainiterhandler;
 }

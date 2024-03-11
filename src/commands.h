@@ -1,9 +1,10 @@
 #ifndef __COMMANDS__H__
 #define __COMMANDS__H__
 
-#define USE_ARGCV   1
+#define USE_ARGCV                    1
+#define BETTER_COMMAND_HANDLER_MACRO 1
 
-#define nameof(obj) #obj
+#define nameof(obj)                  #obj
 
 // typedef struct _command {
 //     char *cmd;
@@ -39,14 +40,6 @@ struct command_invocation {
 #endif
 
 typedef __COMMAND_HANDLER((*command_handler_t));
-
-/**
- * Always use this macro to define new command handler functions.
- * It ensures the parameters are ordered, typed, and named properly, so
- * they be can be used by other macros (e.g. COMMAND_PARSE_NUMBER).
- * All command handler functions must be defined as static in scope.
- */
-// #define COMMAND_HANDLER(name) __COMMAND_HANDLER(name)
 
 /**
  * Use this to macro to call a command helper (or a nested handler).
@@ -93,6 +86,39 @@ typedef struct _command_registration {
     int rev;
 } command_registration;
 
+extern void display_commands(command_registration const *commands, int argc, char *argv[], int level);
+extern void goto_commands(command_registration const *commands, command_registration **iterhandler, int argc,
+                          char *argv[], int level);
+
+#include "string.h"
+#include "strings.h"
+
+#define ARGC                   (argc)
+#define ARGV                   (argv)
+#define ARGV2_uint32_t(index)  strtol(argv[index], NULL, 10)
+#define ARGV2_int32_t(index)   atoi(argv[index])
+#define ARGV2_pchar(index)     argv[index]
+#define ARGV2_char(index)      *argv[index]
+
+#define UN_EXE                 (0x00ACCE55)
+#define NO_EXE                 (0xEEACCE55)
+#define NULL_EXE               (0xFFACCE55)
+
+#define IS_COMMANDP_NULL(cmdd) (cmdd == NULL || (cmdd->module == NULL && cmdd->name == NULL && cmdd->chain == NULL))
+
+#define IS_COMMAND_NULL(cmdd)  ((&cmdd == NULL) || (cmdd.module == NULL && cmdd.name == NULL && cmdd.chain == NULL))
+
+#define ARGV2_bool(index)      ((strcmp(argv[index], "1") == 0) || (strcasecmp(argv[index], "true") == 0))
+
+#if 0
+#define ARGV2_bool(index)                                                                                              \
+    (!(strcmp(argv[index], "0") == 0) || (strcasecmp(argv[index], "true") == 0) ||                                     \
+     (strcmp(argv[index], "TRUE") == 0) || (strcmp(argv[index], "True") == 0))
+#endif // 0
+
+#if defined(BETTER_COMMAND_HANDLER_MACRO) && (BETTER_COMMAND_HANDLER_MACRO)
+
+/** useful MACRO for command register*/
 #define START_REGISTER_COMMANDS(blocks)                                                                                \
     extern command_registration blocks##_##commands[];                                                                 \
     extern void blocks##_register_all_commands(void *owner)
@@ -196,23 +222,17 @@ typedef struct _command_registration {
 
 /**
  * ! register function related commandhandler with args
+ *
+ * Always use this macro to define new command handler functions.
+ * It ensures the parameters are ordered, typed, and named properly, so
+ * they be can be used by other macros (e.g. COMMAND_PARSE_NUMBER).
+ * All command handler functions must be defined as static in scope.
  */
 #define COMMAND_HANDLER(indexx, upchain, helpstr, usagestr, thismodule, func_name, full_func_name, arg_t_n...)         \
     extern int full_func_name;                                                                                         \
     extern __COMMAND_HANDLER(thismodule##_##func_name##_command_handler);                                              \
     __COMMAND_HANDLER_REGISTER_UP(indexx, upchain, helpstr, usagestr, thismodule, func_name)                           \
     __COMMAND_HANDLER(thismodule##_##func_name##_command_handler)
-
-#include "string.h"
-#define ARGC                  (argc)
-#define ARGV                  (argv)
-#define ARGV2_uint32_t(index) strtol(argv[index], NULL, 10)
-#define ARGV2_int32_t(index)  atoi(argv[index])
-#define ARGV2_pchar(index)    argv[index]
-#define ARGV2_char(index)     *argv[index]
-#define ARGV2_bool(index)                                                                                              \
-    ((strcmp(argv[index], "0") == 0) || (strcmp(argv[index], "true") == 0) || (strcmp(argv[index], "TRUE") == 0) ||    \
-     (strcmp(argv[index], "True") == 0))
 
 /** Use this as the last entry in an array of command_registration records. */
 #define COMMAND_REGISTRATION_DONE                                                                                      \
@@ -223,16 +243,8 @@ typedef struct _command_registration {
 /** Use this as the last entry in an array of command_registration records. */
 #define COMMAND_REGISTRATION_NONE                                                                                      \
     {                                                                                                                  \
-        .module = NULL, .name = NULL, .handler = NULL, .usage = NULL, .help = "FOR GET TO ADD THIS?", .chain = NULL    \
+        .module = NULL, .name = NULL, .handler = NULL, .usage = NULL, .help = "FORGET TO ADD THIS?", .chain = NULL     \
     }
-
-#define UN_EXE                 (0x00ACCE55)
-#define NO_EXE                 (0xEEACCE55)
-#define NULL_EXE               (0xFFACCE55)
-
-#define IS_COMMANDP_NULL(cmdd) (cmdd == NULL || (cmdd->module == NULL && cmdd->name == NULL && cmdd->chain == NULL))
-
-#define IS_COMMAND_NULL(cmdd)  ((&cmdd == NULL) || (cmdd.module == NULL && cmdd.name == NULL && cmdd.chain == NULL))
 
 // #define COMMAMDS_IS_NULL(thecmd) (thecmd->name == NULL || thecmd->handler == NULL)
 
@@ -246,6 +258,8 @@ typedef struct _command_registration {
         }                                                                                                              \
         return 0;                                                                                                      \
     }
+
+#endif // BETTER_COMMAND_HANDLER_MACRO
 
 // 参数拼接
 // 参数拼接
@@ -353,7 +367,4 @@ typedef struct _command_registration {
 
 #define PP_MAP(map, ctx, ...) PP_VA_NAME(PP_MAP_, __VA_ARGS__)(map, ctx, ##__VA_ARGS__)
 
-extern void display_commands(command_registration *commands, int argc, char *argv[], int level);
-extern void goto_commands(command_registration *commands, command_registration **iterhandler, int argc, char *argv[],
-                          int level);
 #endif //!__COMMANDS__H__

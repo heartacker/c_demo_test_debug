@@ -44,6 +44,20 @@ int afe_reset(uint32_t mask, char dif)
     return 0;
 }
 
+COMMAND_HANDLER_LAMDA(
+    __COUNTER__, NULL, "afe_reset", "(uint32_t mask, char dif)", afe, reset2, afe_reset2(uint32_t mask, char dif), {
+        uint32_t mask = ARGV2_uint32_t(1);
+        char dif = ARGV2_char(2);
+        return afe_reset(mask, dif);
+    }, );
+
+int afe_reset2(uint32_t mask, char dif)
+{
+
+    printf("%d, %c", mask, dif);
+    return 0;
+}
+
 COMMAND_ARGC_ARGV(__COUNTER__, NULL, "afe_reset_argcv", "(int argc, char *argv[])", afe, reset_argcv)
 {
     return 0;

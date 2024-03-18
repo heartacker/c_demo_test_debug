@@ -87,11 +87,11 @@ void goto_commands(command_registration const *commands, command_registration **
 
             if (iterhandler->chain == NULL && 0 == strcmp((iterhandler)->name, *argv)) { // function
                 DEBUG_CMD_PRINT("execute: %s.%s\n", (iterhandler)->module, (iterhandler)->name);
-                (iterhandler)->rev = NO_EXE;
+                (iterhandler)->rev = CLR_BEFORE_EXE;
                 if (iterhandler->handler) {
                     (iterhandler)->rev = (iterhandler)->handler(argc, argv);
                 } else {
-                    (iterhandler)->rev = NULL_EXE;
+                    (iterhandler)->rev = FIND_NULL_EXE;
                 }
                 chainiterhandler = iterhandler;
                 goto RETURNCURRENT;

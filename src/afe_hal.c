@@ -12,7 +12,7 @@
 #include "pll2g.h"
 #include "pllsa.h"
 
-command_registration *global_thandler = NULL;
+command_registration *g_thandler = NULL;
 
 extern void display_sizeof();
 
@@ -237,23 +237,23 @@ int afe_cmd_proc(int argc, char const *argv[])
     printf("============================\n\n\n");
     display_commands(wifi_commands, argc, argv, 0);
 
-    if (!global_thandler)
-        global_thandler = wifi_commands;
+    if (!g_thandler)
+        g_thandler = wifi_commands;
     printf("============================\n\n\n");
-    goto_commands(wifi_commands, &global_thandler, argc - 1, &argv[1], 0);
-    // global_thandler = goto_commands(global_thandler, argc - 1, &argv[1], 0);
-    if (!IS_COMMANDP_NULL(global_thandler)) {
-        printf("find the command: name = %s, retv = %d\n", global_thandler->name, global_thandler->rev);
+    goto_commands(wifi_commands, &g_thandler, argc - 1, &argv[1], 0);
+    // g_thandler = goto_commands(g_thandler, argc - 1, &argv[1], 0);
+    if (!IS_COMMANDP_NULL(g_thandler)) {
+        printf("find the command: name = %s, retv = %d\n", g_thandler->name, g_thandler->rev);
     } else {
         printf("cannot find the command: %s\n", *argv);
-        display_commands(global_thandler, argc, argv, 0);
+        display_commands(g_thandler, argc, argv, 0);
     }
 
     while (1) {
         printf("Enter a command: ");
         scanf(" %s", cmdline);
         char c = *cmdline;
-        goto_commands(global_thandler, &global_thandler, 1, cmdline, 0);
+        goto_commands(g_thandler, &g_thandler, 1, cmdline, 0);
         // Process the command
         switch (c && (strlen(cmdline) == 1)) {
         case 'A':

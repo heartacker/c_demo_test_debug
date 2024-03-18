@@ -23,24 +23,24 @@ extern struct type_and_name *type_and_name;
 // AlignArrayOfStructures: Right
 
 struct type_and_name const type_and_names[] = {
-    {          nameof(char),           sizeof(char)},
-    {        nameof(int8_t),         sizeof(int8_t)},
-    { nameof(unsigned char),  sizeof(unsigned char)},
-    {       nameof(uint8_t),        sizeof(uint8_t)},
-    {         nameof(short),          sizeof(short)},
-    {       nameof(int16_t),        sizeof(int16_t)},
+    {nameof(char),           sizeof(char)          },
+    {nameof(int8_t),         sizeof(int8_t)        },
+    {nameof(unsigned char),  sizeof(unsigned char) },
+    {nameof(uint8_t),        sizeof(uint8_t)       },
+    {nameof(short),          sizeof(short)         },
+    {nameof(int16_t),        sizeof(int16_t)       },
     {nameof(unsigned short), sizeof(unsigned short)},
-    {      nameof(uint16_t),       sizeof(uint16_t)},
-    {           nameof(int),            sizeof(int)},
-    {       nameof(int32_t),        sizeof(int32_t)},
-    {  nameof(unsigned int),   sizeof(unsigned int)},
-    {      nameof(uint32_t),       sizeof(uint32_t)},
-    { nameof(unsigned long),  sizeof(unsigned long)},
-    {      nameof(uint64_t),       sizeof(uint64_t)},
-    {     nameof(long long),      sizeof(long long)},
-    {      nameof(int128_t),       sizeof(int128_t)},
-    {     nameof(long long),      sizeof(long long)},
-    {     nameof(uint128_t),      sizeof(uint128_t)}
+    {nameof(uint16_t),       sizeof(uint16_t)      },
+    {nameof(int),            sizeof(int)           },
+    {nameof(int32_t),        sizeof(int32_t)       },
+    {nameof(unsigned int),   sizeof(unsigned int)  },
+    {nameof(uint32_t),       sizeof(uint32_t)      },
+    {nameof(unsigned long),  sizeof(unsigned long) },
+    {nameof(uint64_t),       sizeof(uint64_t)      },
+    {nameof(long long),      sizeof(long long)     },
+    {nameof(int128_t),       sizeof(int128_t)      },
+    {nameof(long long),      sizeof(long long)     },
+    {nameof(uint128_t),      sizeof(uint128_t)     }
 };
 /* clang-format on */
 
@@ -83,7 +83,6 @@ void display_sizeof()
     printf("sizeof(uint128_t)\t\t=\t%ld\n", sizeof(uint128_t));
 #endif // DEBUG
 }
-
 
 int main(int argc, char const *argv[])
 // int main(int argc, const char *argv[])

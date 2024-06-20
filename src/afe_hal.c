@@ -288,7 +288,7 @@ command_registration wifi_commands[] = {
      .name = nameof(afe),
      .chain = afe_commands,
      },
- // {.module = "wifi", .name = nameof(afe_hal2_commands), .chain = afe_hal_commands},
+    // {.module = "wifi", .name = nameof(afe_hal2_commands), .chain = afe_hal_commands},
     COMMAND_REGISTRATION_DONE,
 };
 
